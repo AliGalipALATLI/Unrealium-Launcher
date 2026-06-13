@@ -246,7 +246,7 @@ void EditorCardWidget::commitNameEdit() {
     }
 
     // Attempt to write new .desktop entry for the new name. If write fails, warn and revert.
-    bool ok = DesktopEntryWriter::write(newName, m_entry.path);
+    bool ok = DesktopEntryWriter::write(newName, m_entry.path, m_entry.launchArgs);
     if (!ok) {
         QMessageBox::warning(this, "Error", "Failed to create desktop entry for the new name. Name not changed.");
         m_nameLabel->setText(oldName);

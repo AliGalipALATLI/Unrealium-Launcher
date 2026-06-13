@@ -86,6 +86,7 @@ namespace {
             QJsonObject obj;
             obj["name"] = entry.name;
             obj["path"] = entry.path;
+            obj["launchArgs"] = entry.launchArgs;
             obj["isFavorite"] = entry.isFavorite;
             array.append(obj);
         }
@@ -119,6 +120,7 @@ QList<EditorEntry> ConfigManager::loadEntries() {
             EditorEntry entry;
             entry.name = obj["name"].toString();
             entry.path = obj["path"].toString();
+            entry.launchArgs = obj["launchArgs"].toString();
             entry.isFavorite = obj["isFavorite"].toBool(false);
             entries.append(entry);
         }
@@ -135,6 +137,7 @@ void ConfigManager::saveEntry(const EditorEntry& entry) {
             // are persisted when toggled from the UI.
             bool wasFavorite = entries[i].isFavorite;
             entries[i].path = entry.path;
+            entries[i].launchArgs = entry.launchArgs;
             entries[i].isFavorite = entry.isFavorite;
             // If newly favorited, move to front. If unfavorited, move to end.
             if (!wasFavorite && entry.isFavorite) {

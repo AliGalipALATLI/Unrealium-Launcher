@@ -31,12 +31,21 @@ AddEditorDialog::AddEditorDialog(QWidget *parent) : QDialog(parent) {
     nameLayout->addWidget(nameLabel);
     nameLayout->addWidget(nameLineEdit);
 
+    // Launch args row
+    QHBoxLayout *launchArgsLayout = new QHBoxLayout();
+    QLabel *launchArgsLabel = new QLabel("Launch Args:", this);
+    launchArgsLineEdit = new QLineEdit(this);
+    launchArgsLineEdit->setPlaceholderText("e.g. -game -project=/path/to/proj.uproject");
+    launchArgsLayout->addWidget(launchArgsLabel);
+    launchArgsLayout->addWidget(launchArgsLineEdit);
+
     // Add button
     addButton = new QPushButton("Add", this);
     addButton->setEnabled(false); // Enable when name is not empty
 
     mainLayout->addLayout(browseLayout);
     mainLayout->addLayout(nameLayout);
+    mainLayout->addLayout(launchArgsLayout);
     mainLayout->addWidget(addButton, 0, Qt::AlignCenter);
 
     connect(browseButton, &QPushButton::clicked, this, &AddEditorDialog::browseFolder);
@@ -72,9 +81,10 @@ void AddEditorDialog::onNameChanged(const QString &text) {
 
 void AddEditorDialog::addEditor() {
     QString name = nameLineEdit->text().trimmed();
-    if (DesktopEntryWriter::write(name, selectedRootPath)) {
+    QString launchArgs = launchArgsLineEdit->text().trimmed();
+    if (DesktopEntryWriter::write(name, selectedRootPath, launchArgs)) {
         // Save to config as well so View Editors shows the entry immediately
-        ConfigManager::saveEntry({name, selectedRootPath});
+        ConfigManager::saveEntry({name, selectedRootPath, launchArgs});
         QMessageBox::information(this, "Success", "Desktop entry created successfully.");
         accept();
     } else {

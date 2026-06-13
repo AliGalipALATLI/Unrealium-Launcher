@@ -4,18 +4,22 @@
 #include <QTextStream>
 #include <QStandardPaths>
 
-bool DesktopEntryWriter::write(const QString& name, const QString& engineRootPath) {
-    // Prefer the standard applications location but fall back to the user's
-    // ~/.local/share/applications if that's empty or not writable. Some systems
-    // may return a system path (eg. /usr/share/applications) which isn't
-    // writable by the user — ensure we use a per-user location.
+static bool isValidEnvVarName(const QString& s) {
+    if (s.isEmpty()) return false;
+    if (!s[0].isLetter() && s[0] != '_') return false;
+    for (int i = 1; i < s.size(); ++i) {
+        if (!s[i].isLetterOrNumber() && s[i] != '_') return false;
+    }
+    return true;
+}
+
+bool DesktopEntryWriter::write(const QString& name, const QString& engineRootPath, const QString& launchArgs) {
     QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
     if (desktopPath.isEmpty()) {
         desktopPath = QDir::homePath() + "/.local/share/applications";
     }
     QDir dir(desktopPath);
     if (!dir.exists()) {
-        // Try to create the directory; if that fails, fall back to ~/.local/share/applications
         if (!dir.mkpath(".")) {
             desktopPath = QDir::homePath() + "/.local/share/applications";
             dir.setPath(desktopPath);
@@ -27,8 +31,24 @@ bool DesktopEntryWriter::write(const QString& name, const QString& engineRootPat
         }
     }
 
-    QString fileName = QString("unreal-%1.desktop").arg(name.toLower().replace(" ", "-"));
+    QString sanitizedName = name.toLower().replace(" ", "-");
+    QString fileName = QString("unreal-%1.desktop").arg(sanitizedName);
     QString filePath = dir.absoluteFilePath(fileName);
+
+    // Parse launchArgs into env vars (VAR=value) vs regular arguments
+    QStringList envVars;
+    QStringList cmdArgs;
+    if (!launchArgs.isEmpty()) {
+        QStringList tokens = launchArgs.split(' ', Qt::SkipEmptyParts);
+        for (const QString& token : tokens) {
+            int eqPos = token.indexOf('=');
+            if (eqPos > 0 && isValidEnvVarName(token.left(eqPos))) {
+                envVars << token;
+            } else {
+                cmdArgs << token;
+            }
+        }
+    }
 
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -39,10 +59,45 @@ bool DesktopEntryWriter::write(const QString& name, const QString& engineRootPat
     out << "[Desktop Entry]\n";
     out << "Type=Application\n";
     out << "Name=" << name << "\n";
-    out << "Exec=" << engineRootPath << "/Engine/Binaries/Linux/UnrealEditor\n";
-    // Only include Icon if the target file exists; some engines may not have
-    // the suggested icon and some DEs are picky about invalid icons.
-    QString iconPath = engineRootPath + "/Engine/Content/Slate/Testing/PerfCapture.png";
+
+    if (!envVars.isEmpty()) {
+        QString wrapperDir = QDir::homePath() + "/.local/share/UnrealLauncher/wrappers";
+        QDir().mkpath(wrapperDir);
+        QString wrapperPath = wrapperDir + "/unreal-" + sanitizedName + ".sh";
+
+        QFile wrapperFile(wrapperPath);
+        if (!wrapperFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            return false;
+        }
+        QTextStream wout(&wrapperFile);
+        wout << "#!/bin/bash\n";
+        wout << "cd \"" << engineRootPath << "\"\n";
+        wout << "exec env";
+        for (const QString& ev : envVars) {
+            wout << " " << ev;
+        }
+        wout << " ./Engine/Binaries/Linux/UnrealEditor";
+        for (const QString& arg : cmdArgs) {
+            wout << " " << arg;
+        }
+        wout << "\n";
+        wrapperFile.close();
+        wrapperFile.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
+                                   QFile::ReadGroup | QFile::ExeGroup |
+                                   QFile::ReadOther | QFile::ExeOther);
+        out << "Exec=" << wrapperPath << "\n";
+    } else {
+        out << "Exec=" << engineRootPath << "/Engine/Binaries/Linux/UnrealEditor";
+        if (!cmdArgs.isEmpty()) {
+            out << " " << cmdArgs.join(" ");
+        }
+        out << "\n";
+    }
+
+    QString iconPath = QDir::homePath() + "/.local/share/icons/UE.png";
+    if (!QFile::exists(iconPath)) {
+        iconPath = engineRootPath + "/Engine/Content/Slate/Testing/PerfCapture.png";
+    }
     if (QFile::exists(iconPath)) {
         out << "Icon=" << iconPath << "\n";
     }
@@ -50,12 +105,9 @@ bool DesktopEntryWriter::write(const QString& name, const QString& engineRootPat
     out << "Categories=Development;\n";
 
     file.close();
-    // Mark the .desktop file executable so desktop environments treat it as a valid
-    // launcher file. Some environments require the executable bit to show the
-    // application in menus or treat the file as trusted.
     QFile::Permissions perms = QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
                                QFile::ReadGroup | QFile::ExeGroup |
-                               QFile::ReadOther | QFile::ExeOther; // 0755
+                               QFile::ReadOther | QFile::ExeOther;
     file.setPermissions(perms);
 
     return true;
@@ -65,11 +117,18 @@ void DesktopEntryWriter::remove(const QString& name) {
     QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
     if (desktopPath.isEmpty()) desktopPath = QDir::homePath() + "/.local/share/applications";
     QDir dir(desktopPath);
-    QString fileName = QString("unreal-%1.desktop").arg(name.toLower().replace(" ", "-"));
+    QString sanitizedName = name.toLower().replace(" ", "-");
+    QString fileName = QString("unreal-%1.desktop").arg(sanitizedName);
     QString filePath = dir.absoluteFilePath(fileName);
     
     QFile file(filePath);
     if (file.exists()) {
         file.remove();
+    }
+
+    QString wrapperPath = QDir::homePath() + "/.local/share/UnrealLauncher/wrappers/unreal-" + sanitizedName + ".sh";
+    QFile wrapperFile(wrapperPath);
+    if (wrapperFile.exists()) {
+        wrapperFile.remove();
     }
 }

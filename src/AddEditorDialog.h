@@ -18,6 +18,7 @@ private slots:
 private:
     QString selectedRootPath;
     QLineEdit *nameLineEdit;
+    QLineEdit *launchArgsLineEdit;
     QPushButton *addButton;
     QPushButton *browseButton;
 };
