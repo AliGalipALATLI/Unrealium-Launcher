@@ -93,7 +93,7 @@ QString NodeManager::getNodesPath() {
     QString path1 = appDir + "/assistant/nodes";
     if (QDir(path1).exists()) return path1;
 
-    // 2. Check in ~/.local/share/UELinker/assistant/nodes (for installation)
+    // 2. Check in ~/.local/share/Unrealium-Launcher/assistant/nodes (for installation)
     QString shareDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QString path2 = shareDir + "/assistant/nodes";
     if (QDir(path2).exists()) return path2;
@@ -110,7 +110,7 @@ QString NodeManager::getDataPath(const QString& relativePath) {
     QString path1 = appDir + "/" + relativePath;
     if (QFile::exists(path1)) return path1;
 
-    // 2. Check in ~/.local/share/UELinker/ (for installation)
+    // 2. Check in ~/.local/share/Unrealium-Launcher/ (for installation)
     QString shareDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QString path2 = shareDir + "/" + relativePath;
     if (QFile::exists(path2)) return path2;

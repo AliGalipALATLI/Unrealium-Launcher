@@ -95,7 +95,7 @@ echo -e "      Copying application data..."
 cp -r assets ~/.local/share/Unrealium-Launcher/
 cp -r assistant ~/.local/share/Unrealium-Launcher/
 
-# Create .desktop entry so UELinker appears in app menus
+# Create .desktop entry so Unrealium-Launcher appears in app menus
 mkdir -p ~/.local/share/applications
 cat <<EOF > ~/.local/share/applications/Unrealium-Launcher.desktop
 [Desktop Entry]

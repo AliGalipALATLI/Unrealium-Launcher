@@ -61,7 +61,7 @@ bool DesktopEntryWriter::write(const QString& name, const QString& engineRootPat
     out << "Name=" << name << "\n";
 
     if (!envVars.isEmpty()) {
-        QString wrapperDir = QDir::homePath() + "/.local/share/UnrealLauncher/wrappers";
+        QString wrapperDir = QDir::homePath() + "/.local/share/Unrealium-Launcher/wrappers";
         QDir().mkpath(wrapperDir);
         QString wrapperPath = wrapperDir + "/unreal-" + sanitizedName + ".sh";
 
@@ -126,7 +126,7 @@ void DesktopEntryWriter::remove(const QString& name) {
         file.remove();
     }
 
-    QString wrapperPath = QDir::homePath() + "/.local/share/UnrealLauncher/wrappers/unreal-" + sanitizedName + ".sh";
+    QString wrapperPath = QDir::homePath() + "/.local/share/Unrealium-Launcher/wrappers/unreal-" + sanitizedName + ".sh";
     QFile wrapperFile(wrapperPath);
     if (wrapperFile.exists()) {
         wrapperFile.remove();

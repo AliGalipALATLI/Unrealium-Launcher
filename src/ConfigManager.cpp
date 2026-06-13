@@ -9,7 +9,7 @@
 
 namespace {
     QString getConfigPath() {
-        QString configDir = QDir::homePath() + "/.config/UnrealLauncher";
+        QString configDir = QDir::homePath() + "/.config/Unrealium-Launcher";
         QDir dir(configDir);
         if (!dir.exists()) {
             dir.mkpath(".");
