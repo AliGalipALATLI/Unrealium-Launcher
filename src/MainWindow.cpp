@@ -1,7 +1,9 @@
 #include "MainWindow.h"
 #include "AddEditorDialog.h"
+#include "DownloadEditorDialog.h"
 #include "NodeDetailDialog.h"
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QCoreApplication>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
@@ -47,15 +49,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   connect(addEditorButton, &QPushButton::clicked, this,
           &MainWindow::openAddEditorDialog);
 
+  downloadEditorButton = new QPushButton("Download Editor", this);
+  connect(downloadEditorButton, &QPushButton::clicked, this,
+          &MainWindow::openDownloadEditorDialog);
+
+  // Place buttons in the layout and make their sizes identical
   QSize btnSize(240, 56);
   viewEditorsButton->setFixedSize(btnSize);
   addEditorButton->setFixedSize(btnSize);
+  downloadEditorButton->setFixedSize(btnSize);
 
   rightLayout->addWidget(viewEditorsButton, 0, Qt::AlignCenter);
   rightLayout->addSpacing(12);
   rightLayout->addWidget(addEditorButton, 0, Qt::AlignCenter);
-  rightLayout->addStretch();
+  rightLayout->addSpacing(12);
+  rightLayout->addWidget(downloadEditorButton, 0, Qt::AlignCenter);
 
+  rightLayout->addStretch();
   pageLayout->addWidget(right);
 
   stackedWidget->addWidget(mainPage);
@@ -82,7 +92,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
       QString id = idx.data(Qt::UserRole).toString();
       for (const auto &n : nodes) {
           if (n.id == id) {
-              // lazy-include to avoid header ordering problems
               NodeDetailDialog *dlg = new NodeDetailDialog(n, this);
               dlg->exec();
               delete dlg;
@@ -100,6 +109,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
 void MainWindow::openAddEditorDialog() {
   AddEditorDialog dialog(this);
+  dialog.exec();
+}
+
+void MainWindow::openDownloadEditorDialog() {
+  DownloadEditorDialog dialog(this);
   dialog.exec();
 }
 

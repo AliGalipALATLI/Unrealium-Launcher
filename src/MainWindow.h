@@ -9,7 +9,6 @@
 
 #include "NodeManager.h"
 
-
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
@@ -18,6 +17,7 @@ public:
 
 private slots:
   void openAddEditorDialog();
+  void openDownloadEditorDialog();
   void showViewEditorsPage();
   void showMainPage();
 
@@ -25,6 +25,7 @@ private:
   QStackedWidget *stackedWidget;
   QWidget *mainPage;
   QPushButton *addEditorButton;
+  QPushButton *downloadEditorButton;
   QPushButton *viewEditorsButton;
   ViewEditorsPage *viewEditorsPage;
 };

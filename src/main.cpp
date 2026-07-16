@@ -5,7 +5,7 @@ int main(int argc, char *argv[]) {
     qputenv("QT_QPA_PLATFORM", "wayland;xcb"); // Wayland öncelikli, XWayland fallback
     
     QApplication a(argc, argv);
-    QCoreApplication::setApplicationName("UELinker");
+    QCoreApplication::setApplicationName("Unrealium Launcher");
 
     qApp->setStyleSheet(R"(
         QWidget        { background: #1e1e1e; color: #ffffff; }
