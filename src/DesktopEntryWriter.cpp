@@ -132,3 +132,61 @@ void DesktopEntryWriter::remove(const QString& name) {
         wrapperFile.remove();
     }
 }
+
+bool DesktopEntryWriter::writeProjectEntry(const QString& projectName, const QString& projectFilePath, const QString& launcherBinary) {
+    QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
+    if (desktopPath.isEmpty()) {
+        desktopPath = QDir::homePath() + "/.local/share/applications";
+    }
+    QDir dir(desktopPath);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    QString sanitizedName = projectName.toLower().replace(" ", "-");
+    QString fileName = QString("ueproject-%1.desktop").arg(sanitizedName);
+    QString filePath = dir.absoluteFilePath(fileName);
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        return false;
+    }
+
+    QTextStream out(&file);
+    out << "[Desktop Entry]\n";
+    out << "Type=Application\n";
+    out << "Name=" << projectName << "\n";
+    out << "Comment=Open " << projectName << " in Unreal Editor\n";
+
+    QString escapedProjectPath = QString("\"%1\"").arg(projectFilePath);
+    out << "Exec=" << launcherBinary << " --open-project " << escapedProjectPath << "\n";
+
+    QString iconPath = QDir::homePath() + "/.local/share/icons/UE.png";
+    if (QFile::exists(iconPath)) {
+        out << "Icon=" << iconPath << "\n";
+    }
+    out << "Terminal=false\n";
+    out << "Categories=Development;\n";
+
+    file.close();
+    QFile::Permissions perms = QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
+                               QFile::ReadGroup | QFile::ExeGroup |
+                               QFile::ReadOther | QFile::ExeOther;
+    file.setPermissions(perms);
+
+    return true;
+}
+
+void DesktopEntryWriter::removeProjectEntry(const QString& projectName) {
+    QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
+    if (desktopPath.isEmpty()) desktopPath = QDir::homePath() + "/.local/share/applications";
+    QDir dir(desktopPath);
+    QString sanitizedName = projectName.toLower().replace(" ", "-");
+    QString fileName = QString("ueproject-%1.desktop").arg(sanitizedName);
+    QString filePath = dir.absoluteFilePath(fileName);
+
+    QFile file(filePath);
+    if (file.exists()) {
+        file.remove();
+    }
+}

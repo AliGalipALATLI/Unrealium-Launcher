@@ -1,5 +1,6 @@
 #pragma once
 #include "ViewEditorsPage.h"
+#include "ViewProjectsPage.h"
 #include <QMainWindow>
 #include <QPushButton>
 #include <QStackedWidget>
@@ -19,6 +20,7 @@ public:
 private slots:
   void openAddEditorDialog();
   void showViewEditorsPage();
+  void showViewProjectsPage();
   void showMainPage();
 
 private:
@@ -26,5 +28,7 @@ private:
   QWidget *mainPage;
   QPushButton *addEditorButton;
   QPushButton *viewEditorsButton;
+  QPushButton *viewProjectsButton;
   ViewEditorsPage *viewEditorsPage;
+  ViewProjectsPage *viewProjectsPage;
 };

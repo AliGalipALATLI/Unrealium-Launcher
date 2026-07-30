@@ -186,3 +186,124 @@ void ConfigManager::renameEntry(const QString& oldName, const EditorEntry& newEn
     entries.append(newEntry);
     writeJson(entries);
 }
+
+static QString getProjectsConfigPath() {
+    QString configDir = QDir::homePath() + "/.config/Unrealium-Launcher";
+    QDir dir(configDir);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+    return configDir + "/projects.json";
+}
+
+QMap<QString, KnownProject> ConfigManager::loadKnownProjects() {
+    QMap<QString, KnownProject> projects;
+    QFile file(getProjectsConfigPath());
+    if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
+        return projects;
+    }
+
+    QByteArray data = file.readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    if (!doc.isObject()) return projects;
+
+    QJsonObject root = doc.object();
+    QJsonObject known = root["knownProjects"].toObject();
+
+    for (auto it = known.begin(); it != known.end(); ++it) {
+        QJsonObject obj = it.value().toObject();
+        KnownProject p;
+        p.projectPath = obj["projectPath"].toString();
+        p.projectName = obj["projectName"].toString();
+        p.projectsFolder = obj["projectsFolder"].toString();
+        p.desktopFile = obj["desktopFile"].toString();
+        p.isFavorite = obj["isFavorite"].toBool(false);
+        QJsonArray editorsArr = obj["editorNames"].toArray();
+        for (int i = 0; i < editorsArr.size(); ++i) {
+            p.editorNames.append(editorsArr[i].toString());
+        }
+        projects[it.key()] = p;
+    }
+    return projects;
+}
+
+void ConfigManager::saveKnownProject(const KnownProject& project) {
+    QMap<QString, KnownProject> projects = loadKnownProjects();
+    projects[project.projectPath] = project;
+
+    QJsonObject root;
+    QJsonObject known;
+    for (auto it = projects.begin(); it != projects.end(); ++it) {
+        QJsonObject obj;
+        obj["projectPath"] = it->projectPath;
+        obj["projectName"] = it->projectName;
+        obj["projectsFolder"] = it->projectsFolder;
+        obj["desktopFile"] = it->desktopFile;
+        obj["isFavorite"] = it->isFavorite;
+        QJsonArray editorsArr;
+        for (const QString& name : it->editorNames) {
+            editorsArr.append(name);
+        }
+        obj["editorNames"] = editorsArr;
+        known[it.key()] = obj;
+    }
+    root["knownProjects"] = known;
+
+    QFile file(getProjectsConfigPath());
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(QJsonDocument(root).toJson());
+    }
+}
+
+void ConfigManager::removeKnownProject(const QString& projectPath) {
+    QMap<QString, KnownProject> projects = loadKnownProjects();
+    projects.remove(projectPath);
+
+    QJsonObject root;
+    QJsonObject known;
+    for (auto it = projects.begin(); it != projects.end(); ++it) {
+        QJsonObject obj;
+        obj["projectPath"] = it->projectPath;
+        obj["projectName"] = it->projectName;
+        obj["projectsFolder"] = it->projectsFolder;
+        obj["desktopFile"] = it->desktopFile;
+        obj["isFavorite"] = it->isFavorite;
+        QJsonArray editorsArr;
+        for (const QString& name : it->editorNames) {
+            editorsArr.append(name);
+        }
+        obj["editorNames"] = editorsArr;
+        known[it.key()] = obj;
+    }
+    root["knownProjects"] = known;
+
+    QFile file(getProjectsConfigPath());
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(QJsonDocument(root).toJson());
+    }
+}
+
+void ConfigManager::saveAllKnownProjects(const QMap<QString, KnownProject>& projects) {
+    QJsonObject root;
+    QJsonObject known;
+    for (auto it = projects.begin(); it != projects.end(); ++it) {
+        QJsonObject obj;
+        obj["projectPath"] = it->projectPath;
+        obj["projectName"] = it->projectName;
+        obj["projectsFolder"] = it->projectsFolder;
+        obj["desktopFile"] = it->desktopFile;
+        obj["isFavorite"] = it->isFavorite;
+        QJsonArray editorsArr;
+        for (const QString& name : it->editorNames) {
+            editorsArr.append(name);
+        }
+        obj["editorNames"] = editorsArr;
+        known[it.key()] = obj;
+    }
+    root["knownProjects"] = known;
+
+    QFile file(getProjectsConfigPath());
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(QJsonDocument(root).toJson());
+    }
+}

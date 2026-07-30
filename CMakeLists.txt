@@ -15,9 +15,13 @@ add_executable(Unrealium-Launcher
     src/DesktopEntryWriter.cpp
     src/ConfigManager.cpp
     src/ViewEditorsPage.cpp
+    src/ViewProjectsPage.cpp
     src/EditorCardWidget.cpp
+    src/ProjectCardWidget.cpp
     src/NodeManager.cpp
     src/NodeDetailDialog.cpp
+    src/ProjectScannerService.cpp
+    src/EditorSwitchDialog.cpp
 )
 
 target_link_libraries(Unrealium-Launcher PRIVATE Qt6::Widgets Qt6::Core)

@@ -43,15 +43,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   connect(viewEditorsButton, &QPushButton::clicked, this,
           &MainWindow::showViewEditorsPage);
 
+  viewProjectsButton = new QPushButton("View Projects", this);
+  connect(viewProjectsButton, &QPushButton::clicked, this,
+          &MainWindow::showViewProjectsPage);
+
   addEditorButton = new QPushButton("Add Editor", this);
   connect(addEditorButton, &QPushButton::clicked, this,
           &MainWindow::openAddEditorDialog);
 
   QSize btnSize(240, 56);
   viewEditorsButton->setFixedSize(btnSize);
+  viewProjectsButton->setFixedSize(btnSize);
   addEditorButton->setFixedSize(btnSize);
 
   rightLayout->addWidget(viewEditorsButton, 0, Qt::AlignCenter);
+  rightLayout->addSpacing(12);
+  rightLayout->addWidget(viewProjectsButton, 0, Qt::AlignCenter);
   rightLayout->addSpacing(12);
   rightLayout->addWidget(addEditorButton, 0, Qt::AlignCenter);
   rightLayout->addStretch();
@@ -96,6 +103,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   connect(viewEditorsPage, &ViewEditorsPage::backRequested, this,
           &MainWindow::showMainPage);
   stackedWidget->addWidget(viewEditorsPage);
+
+  // Page 2: View Projects Page
+  viewProjectsPage = new ViewProjectsPage(this);
+  connect(viewProjectsPage, &ViewProjectsPage::backRequested, this,
+          &MainWindow::showMainPage);
+  stackedWidget->addWidget(viewProjectsPage);
 }
 
 void MainWindow::openAddEditorDialog() {
@@ -106,6 +119,11 @@ void MainWindow::openAddEditorDialog() {
 void MainWindow::showViewEditorsPage() {
   viewEditorsPage->loadEditors();
   stackedWidget->setCurrentIndex(1);
+}
+
+void MainWindow::showViewProjectsPage() {
+  viewProjectsPage->loadProjects();
+  stackedWidget->setCurrentIndex(2);
 }
 
 void MainWindow::showMainPage() { stackedWidget->setCurrentIndex(0); }

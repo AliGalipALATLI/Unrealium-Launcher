@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 # Color definitions
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -35,22 +33,32 @@ fi
 
 # ── Step 1: Dependencies ──────────────────────────────────────
 echo -e "\n${YELLOW}[1/4] Checking and installing required dependencies...${NC}"
-if Git -eq 1; then
+if [ "$Git" -eq 1 ]; then
     if command -v yay &> /dev/null; then
         echo -e "    Installing git "
         yay -S --needed --noconfirm git
-    fi
     elif command -v pacman &> /dev/null; then
         echo -e "    Installing git "
         sudo pacman -S --needed --noconfirm git
+    fi
 fi
 
 if command -v yay &> /dev/null; then
     echo -e "      Package manager: ${GREEN}yay${NC} (AUR)"
-    yay -S --needed --noconfirm qt6-base qt6-imageformats cmake make gcc
+    if ! sudo -n true 2>/dev/null; then
+        echo -e "${YELLOW}    sudo requires a password. Skipping package install.${NC}"
+        echo -e "    Make sure these are installed: qt6-base qt6-imageformats cmake make gcc"
+    else
+        yay -S --needed --noconfirm qt6-base qt6-imageformats cmake make gcc
+    fi
 elif command -v pacman &> /dev/null; then
     echo -e "      Package manager: ${GREEN}pacman${NC}"
-    sudo pacman -S --needed --noconfirm qt6-base qt6-imageformats cmake make gcc
+    if ! sudo -n true 2>/dev/null; then
+        echo -e "${YELLOW}    sudo requires a password. Skipping system package install.${NC}"
+        echo -e "    Make sure these are installed: qt6-base qt6-imageformats cmake make gcc"
+    else
+        sudo pacman -S --needed --noconfirm qt6-base qt6-imageformats cmake make gcc
+    fi
 else
     echo -e "${RED}[!] Neither yay nor pacman found.${NC}"
     echo -e "    Please install the following packages manually: qt6-base qt6-imageformats cmake make gcc"
@@ -78,6 +86,9 @@ echo -e "${GREEN}    ✓ Build successful.${NC}"
 echo -e "\n${YELLOW}[4/4] Installing Unrealium-Launcher to your system...${NC}"
 mkdir -p ~/.local/bin
 mkdir -p ~/.local/share/Unrealium-Launcher
+
+# Stop running instances before replacing the binary
+pkill -f "Unrealium-Launcher" 2>/dev/null || true; sleep 1
 
 # Support both possible binary names
 if [ -f "build/Unrealium-Launcher" ]; then
@@ -108,9 +119,27 @@ Terminal=false
 Categories=Development;Utility;
 EOF
 
+# Create autostart .desktop for the project scanner background service
+mkdir -p ~/.config/autostart
+cat <<EOF > ~/.config/autostart/Unrealium-ProjectScanner.desktop
+[Desktop Entry]
+Type=Application
+Name=Unrealium Project Scanner
+Comment=Background service that scans Unreal Projects and creates desktop entries
+Exec=$HOME/.local/bin/Unrealium-Launcher --daemon
+Hidden=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+EOF
+
 echo -e "${GREEN}    ✓ Unrealium-Launcher installed to ~/.local/bin/Unrealium-Launcher${NC}"
 echo -e "${GREEN}    ✓ Application data copied to ~/.local/share/Unrealium-Launcher/${NC}"
 echo -e "${GREEN}    ✓ Desktop entry created at ~/.local/share/applications/Unrealium-Launcher.desktop${NC}"
+echo -e "${GREEN}    ✓ Autostart entry created at ~/.config/autostart/Unrealium-ProjectScanner.desktop${NC}"
+
+# Start the project scanner daemon immediately
+nohup $HOME/.local/bin/Unrealium-Launcher --daemon > /dev/null 2>&1 &
+echo -e "${GREEN}    ✓ Project scanner service started in background${NC}"
 
 # ── Done! ─────────────────────────────────────────────────────
 echo -e "\n${GREEN}=======================================${NC}"
