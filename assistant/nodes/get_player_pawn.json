@@ -1,0 +1,24 @@
+{
+  "name": "Get Player Pawn",
+  "keywords": ["get player pawn", "player index", "player controller", "local player", "Gameplay Statics", "APawn", "player character"],
+  "description": "Returns the pawn possessed by the player controller at the specified player index. Will not include pawns of remote clients with no available player controller. Target is Gameplay Statics.",
+  "inputs": [
+    {
+      "name": "World Context Object",
+      "type": "Object",
+      "description": "Object used to resolve the world. Usually self or hidden when called from an actor."
+    },
+    {
+      "name": "Player Index",
+      "type": "Integer",
+      "description": "Index in the player controller list, starting first with local players (0 = first local player) and then available remote ones."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Return Value",
+      "type": "Pawn",
+      "description": "The pawn possessed by the player controller at the given index, or null if none. Always validate with Is Valid before use."
+    }
+  ]
+}

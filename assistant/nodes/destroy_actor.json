@@ -1,0 +1,24 @@
+{
+  "name": "Destroy Actor",
+  "keywords": ["destroy", "remove actor", "kill", "AActor", "Destroy()", "pending kill", "garbage collection", "cleanup"],
+  "description": "Removes an actor from the level, marking it pending kill so it is no longer rendered, ticked, or collidable. Memory is reclaimed later by garbage collection.",
+  "inputs": [
+    {
+      "name": "Target",
+      "type": "Actor",
+      "description": "The actor to destroy. Connect a Get reference, a Spawn Actor output, or any valid actor reference."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Out",
+      "type": "Exec",
+      "description": "Execution pin that fires after the actor is marked for destruction."
+    },
+    {
+      "name": "Return Value",
+      "type": "Boolean",
+      "description": "True if the actor was successfully destroyed. False if the destroy call was rejected (for example during level transitions)."
+    }
+  ]
+}

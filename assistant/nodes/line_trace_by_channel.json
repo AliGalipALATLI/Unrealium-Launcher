@@ -1,0 +1,59 @@
+{
+  "name": "Line Trace By Channel",
+  "keywords": ["line trace", "raycast", "single trace", "collision channel", "hit result", "FHitResult", "LineTraceSingleByChannel", "trace"],
+  "description": "Casts a ray from Start to End and returns true if it hit a blocking object on the specified collision channel. The first blocking hit is written to an Out Hit result.",
+  "inputs": [
+    {
+      "name": "Start",
+      "type": "Vector",
+      "description": "Start point of the line trace in world space. Connect Get Actor Location, a camera location, or any Vector."
+    },
+    {
+      "name": "End",
+      "type": "Vector",
+      "description": "End point of the line trace in world space. Often Start + Forward Vector * Distance."
+    },
+    {
+      "name": "Trace Channel",
+      "type": "CollisionChannel",
+      "description": "Collision channel to test against: ECC_Visibility, ECC_Camera, ECC_WorldStatic, or a custom channel defined in Project Settings."
+    },
+    {
+      "name": "Trace Complex",
+      "type": "Boolean",
+      "description": "Whether to trace against complex collision (per-triangle) instead of simple collision. Disable for performance."
+    },
+    {
+      "name": "Actors to Ignore",
+      "type": "Array of Actor",
+      "description": "Actors to skip during the trace (e.g. the trace owner, the local player). Connect a Make Array."
+    },
+    {
+      "name": "Draw Debug Type",
+      "type": "DrawDebugTrace",
+      "description": "Whether to draw the trace visually: None, For One Frame, For Duration, or Persistent. Useful for debugging."
+    },
+    {
+      "name": "Ignore Self",
+      "type": "Boolean",
+      "description": "If true, ignores the calling actor during the trace. Convenient when tracing from a player's camera."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Out",
+      "type": "Exec",
+      "description": "Execution pin that fires after the trace completes. Continue the graph from here."
+    },
+    {
+      "name": "Return Value",
+      "type": "Boolean",
+      "description": "True if the trace hit a blocking object on the specified channel. Branch on this to react to hits."
+    },
+    {
+      "name": "Out Hit",
+      "type": "Hit Result",
+      "description": "Detailed information about the blocking hit: Hit Actor, Impact Location, Impact Normal, etc. Break Hit to access fields."
+    }
+  ]
+}

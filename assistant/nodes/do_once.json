@@ -1,0 +1,29 @@
+{
+  "name": "Do Once",
+  "keywords": ["do once", "one-shot", "first time only", "reset", "single execution", "guard", "fire once"],
+  "description": "Lets execution pass through a single time, then blocks every subsequent call until its Reset input fires. Commonly used to ensure setup logic, a sound cue, or a one-time event triggers only once.",
+  "inputs": [
+    {
+      "name": "In",
+      "type": "Exec",
+      "description": "Execution pin that may pass through once. Connect any exec output that should only trigger the body once."
+    },
+    {
+      "name": "Reset",
+      "type": "Exec",
+      "description": "Resets the internal flag of the node so it can be triggered again. Connect to a respawn, retry, or level reload event."
+    },
+    {
+      "name": "Start Closed",
+      "type": "Boolean",
+      "description": "If true, the node starts in the already-triggered state. Completed will not pulse until Reset is called."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Completed",
+      "type": "Exec",
+      "description": "Pulsed output once the node is triggered (only the first time, until Reset). Connect the one-time body here."
+    }
+  ]
+}

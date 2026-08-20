@@ -1,0 +1,24 @@
+{
+  "name": "Multiply",
+  "keywords": ["multiply", "product", "times", "*", "arithmetic", "float", "math operator", "n-ary", "multiplication"],
+  "description": "Multiplies two floating-point numbers. Like Add, the Blueprint Multiply node is variadic: additional input pins can be added to chain more multiplications. Returns the product of all connected inputs.",
+  "inputs": [
+    {
+      "name": "A",
+      "type": "Float",
+      "description": "Multiplicand. Connect a float variable, a literal number, or the output of any node returning a float."
+    },
+    {
+      "name": "B",
+      "type": "Float",
+      "description": "Multiplier. Connect a float variable, a literal number, or the output of any node returning a float."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Return Value",
+      "type": "Float",
+      "description": "The product A * B (* any additional C, D, ... pins added by dragging the node)."
+    }
+  ]
+}

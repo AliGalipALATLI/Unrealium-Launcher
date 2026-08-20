@@ -1,0 +1,64 @@
+{
+  "name": "Play Sound at Location",
+  "keywords": ["play sound at location", "audio", "sound cue", "spatial", "attenuation", "USoundBase", "UGameplayStatics", "diegetic sound", "3d sound", "sfx"],
+  "description": "Plays a spatialized sound asset at a world-space position so it attenuates with distance. Useful for diegetic sounds such as explosions, footsteps, and ambient emitters.",
+  "inputs": [
+    {
+      "name": "World Context Object",
+      "type": "Object",
+      "description": "Object used to resolve the world. Usually self or hidden when called from an actor."
+    },
+    {
+      "name": "Sound",
+      "type": "Sound Base",
+      "description": "The sound asset to play. Connect a Sound Wave, Sound Cue, or MetaSound Source reference."
+    },
+    {
+      "name": "Location",
+      "type": "Vector",
+      "description": "World-space position to play the sound at. The sound attenuates with distance from this point."
+    },
+    {
+      "name": "Rotation",
+      "type": "Rotator",
+      "description": "Rotation of the sound. Used for panning and 3D orientation of the audio source."
+    },
+    {
+      "name": "Volume Multiplier",
+      "type": "Float",
+      "description": "Multiplier on the sound's volume (1.0 = default, 0.0 = silent, 2.0 = double)."
+    },
+    {
+      "name": "Pitch Multiplier",
+      "type": "Float",
+      "description": "Multiplier on the sound's pitch (1.0 = default, 2.0 = double pitch / octave up, 0.5 = half)."
+    },
+    {
+      "name": "Start Time",
+      "type": "Float",
+      "description": "Offset into the sound asset to start playing at, in seconds. Useful for skipping the intro of long sounds."
+    },
+    {
+      "name": "Attenuation Settings",
+      "type": "Sound Attenuation",
+      "description": "Optional attenuation override for falloff and spatialization behavior. Leave empty to use the sound's defaults."
+    },
+    {
+      "name": "Concurrency Settings",
+      "type": "Sound Concurrency",
+      "description": "Optional concurrency rules (max instances, etc.) to limit how many copies of this sound can play simultaneously."
+    },
+    {
+      "name": "Owning Actor",
+      "type": "Actor",
+      "description": "Optional owning actor. Used for cleanup tracking and to associate the sound with an actor for memory management."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Out",
+      "type": "Exec",
+      "description": "Execution pin that fires immediately after the play call is dispatched. The sound itself continues to play in the background."
+    }
+  ]
+}

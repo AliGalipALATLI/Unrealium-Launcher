@@ -1,0 +1,19 @@
+{
+  "name": "Get Actor Location",
+  "keywords": ["get actor location", "world position", "root component", "AActor", "transform", "read transform", "position"],
+  "description": "Returns the actor's current world-space location as a Vector, reading from its root component. Often paired with Break Vector to inspect or operate on individual axes.",
+  "inputs": [
+    {
+      "name": "Target",
+      "type": "Actor",
+      "description": "The actor whose location to read. Connect a Get reference, a Spawn Actor output, or a self-reference (often hidden)."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Return Value",
+      "type": "Vector",
+      "description": "The actor's world-space position from its root component. Connect to math nodes, Set Actor Location, or Break Vector."
+    }
+  ]
+}

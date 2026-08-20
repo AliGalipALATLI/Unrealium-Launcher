@@ -1,0 +1,19 @@
+{
+  "name": "Get Variable",
+  "keywords": ["get", "variable", "read", "getter", "member", "pure function", "accessor", "attribute", "fetch value"],
+  "description": "Generic Blueprint node generated for each member variable. A pure (no exec) function call that simply returns the current value of a member variable on the target object. Behavior and pin types depend entirely on the variable's declared type.",
+  "inputs": [
+    {
+      "name": "Target",
+      "type": "Object",
+      "description": "The object instance to read the variable from. Hidden when accessed from 'self'. Connect an actor/component reference to read a variable on it."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Return Value",
+      "type": "Wildcard",
+      "description": "The current value of the variable. Type matches the variable's declared type (bool, int, float, string, Vector, struct, object reference, etc.)."
+    }
+  ]
+}

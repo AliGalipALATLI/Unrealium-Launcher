@@ -1,0 +1,24 @@
+{
+  "name": "Is Valid",
+  "keywords": ["is valid", "null check", "not valid", "pending kill", "IsValid", "KismetSystemLibrary", "safety check", "guard", "null guard"],
+  "description": "Confirms that a reference points to a usable object before you call functions on it, preventing crashes from null or destroyed actors. Splits execution into valid and not-valid branches. Target is Kismet System Library.",
+  "inputs": [
+    {
+      "name": "Object",
+      "type": "Object (Wildcard)",
+      "description": "The object reference to test. Connect any actor, component, or object reference that might be null or pending destruction."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Is Valid",
+      "type": "Boolean",
+      "description": "True if the reference is non-null AND the object is not pending kill / being garbage collected. Safe to use the reference."
+    },
+    {
+      "name": "Is Not Valid",
+      "type": "Boolean",
+      "description": "True when the reference is null or the object is invalid. Use this to skip, log a warning, or take a fallback path."
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Get Forward Vector",
+  "keywords": ["get forward vector", "get right vector", "get up vector", "local axis", "world direction", "normalized", "AActor", "unit axis", "facing direction"],
+  "description": "Returns a normalized direction vector along the actor's local X axis (forward), expressed in world space. Companion nodes Get Right Vector and Get Up Vector return the local Y and Z axes respectively.",
+  "inputs": [
+    {
+      "name": "Target",
+      "type": "Actor",
+      "description": "The actor whose forward direction to read. Often hidden when called from self. Connect any actor reference."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Return Value",
+      "type": "Vector",
+      "description": "Unit-length world-space vector pointing along the actor's local X axis (forward). Multiply by a distance to get a forward offset."
+    }
+  ]
+}

@@ -20,7 +20,7 @@
 - **Environment Variable Support** — Set environment variables like `SDF_NO_STENCIL=1` directly in the launch args field; a wrapper script is automatically generated to apply them.
 
 ### Blueprint Node Assistant
-- **Node Database** — Built-in collection of common Blueprint nodes (Branch, BeginPlay, Tick, Make Vector, Break Vector).
+- **Node Database** — Built-in collection of 30 common Blueprint nodes (Print String, Delay, Branch, BeginPlay, Tick, Make Vector, Break Vector, Spawn Actor, Destroy Actor, For Each Loop, Sequence, Flip Flop, Do Once, Set Timer by Function Name, Get Player Pawn, Cast To, Get/Set Variable, Add, Multiply, Get Random Point in Navigable Radius, Line Trace By Channel, Apply Damage, Set Visibility, Play Sound at Location, Set/Get Actor Location, Set Actor Rotation, Get Forward Vector, Is Valid, Apply Damage).
 - **Live Search** — Instant search with three-tier matching (name → keywords → description), results capped at 50.
 - **Detail Viewer** — Click any search result to open a detailed description dialog.
 
@@ -268,12 +268,37 @@ Unrealium-Launcher/
 │   ├── empty.png           ← Empty star (not favorited)
 │   └── full.png            ← Filled star (favorited)
 ├── assistant/
-│   └── nodes/              ← Blueprint node database (JSON)
+│   └── nodes/              ← Blueprint node database (30 JSON files)
 │       ├── branch.json
 │       ├── event_begin_play.json
 │       ├── event_tick.json
 │       ├── make_vector.json
-│       └── brake_vector.json
+│       ├── brake_vector.json
+│       ├── print_string.json
+│       ├── delay.json
+│       ├── spawn_actor_from_class.json
+│       ├── destroy_actor.json
+│       ├── for_each_loop.json
+│       ├── sequence.json
+│       ├── flip_flop.json
+│       ├── do_once.json
+│       ├── set_timer_by_function_name.json
+│       ├── get_player_pawn.json
+│       ├── cast_to.json
+│       ├── get_variable.json
+│       ├── set_variable.json
+│       ├── add.json
+│       ├── multiply.json
+│       ├── get_random_point_in_navigable_radius.json
+│       ├── line_trace_by_channel.json
+│       ├── apply_damage.json
+│       ├── set_visibility.json
+│       ├── play_sound_at_location.json
+│       ├── set_actor_location.json
+│       ├── get_actor_location.json
+│       ├── set_actor_rotation.json
+│       ├── get_forward_vector.json
+│       └── is_valid.json
 ├── web/                    ← Marketing landing page
 │   ├── index.html
 │   ├── install.sh

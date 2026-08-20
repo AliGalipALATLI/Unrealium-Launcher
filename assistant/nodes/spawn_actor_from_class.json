@@ -1,0 +1,39 @@
+{
+  "name": "Spawn Actor from Class",
+  "keywords": ["spawn", "instantiate", "actor class", "runtime creation", "world spawn", "SpawnActor", "spawn actor"],
+  "description": "Instantiates a new actor of the supplied class at the specified world-space transform at runtime. Returns a reference to the spawned actor, or null if the spawn failed (for example due to collision).",
+  "inputs": [
+    {
+      "name": "Class",
+      "type": "Actor Class",
+      "description": "The class of actor to instantiate. Connect a class reference set in a variable or picked from the dropdown."
+    },
+    {
+      "name": "Transform",
+      "type": "Transform",
+      "description": "The world-space transform to place the actor at. Expand the pin to feed Location, Rotation, and Scale separately."
+    },
+    {
+      "name": "Collision Handling Override",
+      "type": "SpawnActorCollisionHandlingMethod",
+      "description": "Determines how collisions are handled at the spawn point. Use AdjustIfPossibleButAlwaysSpawn to force the spawn regardless of overlaps."
+    },
+    {
+      "name": "Owner",
+      "type": "Actor",
+      "description": "Optional owning actor for the spawned instance. Used for replication, kill credit, and damage routing."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Out",
+      "type": "Exec",
+      "description": "Execution pin that fires after the spawn attempt completes. Continue the graph from here."
+    },
+    {
+      "name": "Spawned Actor",
+      "type": "Actor",
+      "description": "Reference to the spawned actor, or null if spawn failed. Always validate this with Is Valid before use."
+    }
+  ]
+}

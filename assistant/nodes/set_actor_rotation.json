@@ -1,0 +1,34 @@
+{
+  "name": "Set Actor Rotation",
+  "keywords": ["set actor rotation", "rotate actor", "FRotator", "FQuat", "AActor", "teleport physics", "orientation", "rotation", "yaw", "pitch", "roll"],
+  "description": "Sets an actor's world-space orientation to an absolute rotation. Feed it a Rotator; UE converts it internally to a quaternion. Returns true if the rotation was successfully applied.",
+  "inputs": [
+    {
+      "name": "Target",
+      "type": "Actor",
+      "description": "The actor whose rotation should be set. Connect a Get reference or a Spawn Actor output."
+    },
+    {
+      "name": "New Rotation",
+      "type": "Rotator",
+      "description": "The new world-space rotation to apply. Connect a Make Rotator, Find Look At Rotation, or a Rotator variable."
+    },
+    {
+      "name": "Teleport Physics",
+      "type": "TeleportPhysicState",
+      "description": "How to handle physics state for the rotation: None (preserve velocity, smooth motion) or TeleportPhysics (reset physics state)."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Out",
+      "type": "Exec",
+      "description": "Execution pin that fires after the rotation is applied. Continue the graph from here."
+    },
+    {
+      "name": "Return Value",
+      "type": "Boolean",
+      "description": "True if the rotation was successfully set. False when sweeping is enabled and blocked."
+    }
+  ]
+}

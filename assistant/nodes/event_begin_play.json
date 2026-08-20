@@ -1,5 +1,13 @@
 {
   "name": "Event BeginPlay",
-  "keywords": ["begin play", "event", "start", "init"],
-  "description": "Called when the game starts or when the actor is spawned. Use to initialize logic."
+  "keywords": ["begin play", "event", "start", "init", "spawn", "onstart"],
+  "description": "Fires once when the level starts or the actor is spawned. Used to initialize state, set variables, and spawn other actors before the first tick.",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "Output",
+      "type": "Exec",
+      "description": "Execution pin. Connect to any node that should run once at start (e.g. Set Variable, Spawn Actor, Play Sound)."
+    }
+  ]
 }

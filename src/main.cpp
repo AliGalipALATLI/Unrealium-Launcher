@@ -3,6 +3,8 @@
 #include "ProjectScannerService.h"
 #include "ConfigManager.h"
 #include "EditorEntry.h"
+#include "SettingsManager.h"
+#include "StyleManager.h"
 #include <QApplication>
 #include <QFileInfo>
 #include <QDir>
@@ -61,26 +63,6 @@ static int handleOpenProject(const QString& projectPath) {
     return 0;
 }
 
-static void applyStyleSheet() {
-    qApp->setStyleSheet(R"(
-        QWidget        { background: #1e1e1e; color: #ffffff; }
-        QPushButton    { background: #2d2d2d; border: 1px solid #444;
-                         border-radius: 6px; padding: 8px 18px; color: #ffffff; }
-        QPushButton:hover   { background: #3a3a3a; }
-        QPushButton:pressed { background: #252525; }
-        QLineEdit      { background: #2d2d2d; border: 1px solid #444;
-                         border-radius: 4px; padding: 4px 8px; color: #ffffff; }
-        QLabel         { color: #ffffff; }
-        QDialog        { background: #1e1e1e; color: #ffffff; }
-        QMenu          { background: #2d2d2d; color: #ffffff; border: 1px solid #444; }
-        QMenu::item:selected { background: #3a3a3a; }
-        QScrollArea    { border: none; }
-        QListWidget    { background: #2d2d2d; color: #ffffff; border: 1px solid #444;
-                         border-radius: 4px; padding: 4px; }
-        QListWidget::item:selected { background: #3a3a3a; }
-    )");
-}
-
 int main(int argc, char *argv[]) {
     qputenv("QT_QPA_PLATFORM", "wayland;xcb");
 
@@ -97,16 +79,12 @@ int main(int argc, char *argv[]) {
         return handleOpenProject(projectPath);
     }
 
-    applyStyleSheet();
-
-    ProjectScannerService scanner;
+    AppSettings settings = SettingsManager::load();
+    StyleManager::apply(settings.fontScale, settings.uiScale);
 
     if (parser.isSet("daemon")) {
-        scanner.start();
         return a.exec();
     }
-
-    scanner.start();
 
     MainWindow w;
     w.show();

@@ -1,0 +1,34 @@
+{
+  "name": "For Each Loop",
+  "keywords": ["for each", "foreach", "iterate", "loop", "array", "range-based for", "TArray", "for-each"],
+  "description": "Iterates over every element of an array (or any array-like container), exposing the current Element and Array Index on each pass. Equivalent to a range-based C++ for loop over a TArray.",
+  "inputs": [
+    {
+      "name": "Array",
+      "type": "Array (Wildcard)",
+      "description": "The array to iterate over. Connect any TArray variable or the output of an array-returning function. The pin type matches the array's element type."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Loop Body",
+      "type": "Exec",
+      "description": "Execution pin that fires once per element with the current element and index bound. Connect the body of the loop here."
+    },
+    {
+      "name": "Array Element",
+      "type": "Wildcard",
+      "description": "The current element value. Its type matches the Array pin's element type. Connect to nodes that operate on that type."
+    },
+    {
+      "name": "Array Index",
+      "type": "Integer",
+      "description": "The index of the current element, starting at 0. Useful for offset calculations or debugging."
+    },
+    {
+      "name": "Completed",
+      "type": "Exec",
+      "description": "Execution pin that fires after the last element has been processed. Use for cleanup or to chain the next step."
+    }
+  ]
+}

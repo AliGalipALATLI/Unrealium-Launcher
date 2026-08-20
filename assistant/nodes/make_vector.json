@@ -1,5 +1,29 @@
 {
   "name": "Make Vector",
-  "keywords": ["make vector", "vector", "construct", "3d"],
-  "description": "Constructs a vector from X, Y, Z float components. Useful for positions and directions."
+  "keywords": ["make vector", "construct", "vector", "3d", "x", "y", "z", "combine"],
+  "description": "Combines three float components (X, Y, Z) into a single Vector value. Used to build positions, directions, scales, or offsets.",
+  "inputs": [
+    {
+      "name": "X",
+      "type": "Float",
+      "description": "Horizontal component. Connect a float variable, a literal number, or the output of a math node."
+    },
+    {
+      "name": "Y",
+      "type": "Float",
+      "description": "Depth component. Connect a float variable, a literal number, or the output of a math node."
+    },
+    {
+      "name": "Z",
+      "type": "Float",
+      "description": "Vertical component. Connect a float variable, a literal number, or the output of a math node."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "V",
+      "type": "Vector",
+      "description": "Resulting Vector. Connect to any node that accepts a Vector (e.g. Set Actor Location, Add Force, Break Vector)."
+    }
+  ]
 }

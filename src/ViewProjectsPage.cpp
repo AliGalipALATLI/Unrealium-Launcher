@@ -2,52 +2,30 @@
 #include "ProjectCardWidget.h"
 #include "ConfigManager.h"
 #include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
 #include <QScrollArea>
-#include <QPixmap>
-#include <QIcon>
-#include <algorithm>
-#include "NodeManager.h"
 
 ViewProjectsPage::ViewProjectsPage(QWidget* parent) : QWidget(parent) {
-    QVBoxLayout* outer = new QVBoxLayout(this);
-    outer->setContentsMargins(0, 0, 0, 0);
+    auto* outer = new QVBoxLayout(this);
+    outer->setContentsMargins(28, 24, 28, 24);
+    outer->setSpacing(0);
 
-    QVBoxLayout* mainLayout = new QVBoxLayout();
-    mainLayout->setContentsMargins(0, 0, 0, 0);
+    auto* header = new QLabel("Projects", this);
+    header->setObjectName("pageTitle");
+    outer->addWidget(header);
 
-    QPushButton* backButton = new QPushButton(this);
-    QPixmap pixmap;
-    bool iconLoaded = false;
-    QString iconPath = NodeManager::getDataPath("assets/AR.png");
-    if (pixmap.load(iconPath)) {
-        backButton->setIcon(QIcon(pixmap));
-        iconLoaded = true;
-    }
-    backButton->setFixedSize(44, 44);
-    if (iconLoaded) {
-        backButton->setIconSize(QSize(28, 28));
-        backButton->setStyleSheet("border: none; background: transparent; color: #ffffff; padding-left: 6px;");
-    } else {
-        backButton->setText("\u2190");
-        backButton->setStyleSheet("color: #ffffff; font-size: 22px; font-weight: bold; border: none; background: transparent; padding-left: 6px;");
-    }
-    connect(backButton, &QPushButton::clicked, this, &ViewProjectsPage::backRequested);
+    auto* sub = new QLabel("Discovered .uproject files associated with registered editors.", this);
+    sub->setObjectName("pageSubtitle");
+    outer->addWidget(sub);
 
-    QHBoxLayout* topLayout = new QHBoxLayout();
-    topLayout->addWidget(backButton);
-    topLayout->addStretch();
-    topLayout->setContentsMargins(8, 8, 8, 8);
-    mainLayout->addLayout(topLayout);
+    outer->addSpacing(18);
 
-    QScrollArea* scrollArea = new QScrollArea();
+    auto* scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollArea->setFrameShape(QFrame::NoFrame);
 
-    QWidget* scrollWidget = new QWidget();
+    auto* scrollWidget = new QWidget();
     m_gridLayout = new QGridLayout(scrollWidget);
-    m_gridLayout->setContentsMargins(16, 16, 16, 16);
+    m_gridLayout->setContentsMargins(0, 0, 0, 0);
     m_gridLayout->setSpacing(16);
 
     for (int i = 0; i < 5; ++i) {
@@ -56,8 +34,8 @@ ViewProjectsPage::ViewProjectsPage(QWidget* parent) : QWidget(parent) {
 
     scrollWidget->setLayout(m_gridLayout);
     scrollArea->setWidget(scrollWidget);
-    mainLayout->addWidget(scrollArea);
-    outer->addLayout(mainLayout);
+
+    outer->addWidget(scrollArea, 1);
 }
 
 void ViewProjectsPage::clearLayout(QLayout* layout) {

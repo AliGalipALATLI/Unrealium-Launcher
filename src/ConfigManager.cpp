@@ -17,64 +17,70 @@ namespace {
         return configDir + "/editors.json";
     }
 
+    QString stripEngineArgs(const QString& execLine) {
+        QString exec = execLine.trimmed();
+        QString path;
+        if (exec.startsWith('"')) {
+            int endQuote = exec.indexOf('"', 1);
+            if (endQuote > 0) path = exec.mid(1, endQuote - 1);
+            else path = exec;
+        } else {
+            int sp = exec.indexOf(' ');
+            path = (sp > 0) ? exec.left(sp) : exec;
+        }
+        const QString suffix = "/Engine/Binaries/Linux/UnrealEditor";
+        if (path.endsWith(suffix)) {
+            path = path.left(path.length() - suffix.length());
+        }
+        return path;
+    }
+
+    EditorEntry readUnrealDesktop(const QFileInfo& fileInfo) {
+        EditorEntry entry;
+        QFile file(fileInfo.absoluteFilePath());
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return entry;
+
+        QTextStream in(&file);
+        QString name, execLine;
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+            if      (line.startsWith("Name="))  name     = line.mid(5).trimmed();
+            else if (line.startsWith("Exec="))  execLine = line.mid(5).trimmed();
+        }
+        if (name.isEmpty() || execLine.isEmpty()) return entry;
+
+        QString path = stripEngineArgs(execLine);
+
+        // Reject anything that doesn't actually point to UnrealEditor.
+        const QString suffix  = "/Engine/Binaries/Linux/UnrealEditor";
+        const QString binary  = path + suffix;
+        if (!QFile::exists(binary)) return entry;
+
+        if (!QDir(path).exists()) {
+            if (QFile::exists(path)) path = QFileInfo(path).absolutePath();
+        }
+        if (!QDir(path).exists()) return entry;
+
+        entry.name = name;
+        entry.path = QDir(path).absolutePath();
+        return entry;
+    }
+
+    // Only consider files we ourselves wrote (prefix "unreal-") AND that point to
+    // an existing UnrealEditor binary. Everything else is ignored.
     QList<EditorEntry> parseDesktopFiles() {
         QList<EditorEntry> entries;
         QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
         QDir dir(desktopPath);
         if (!dir.exists()) return entries;
 
-        // Look for .desktop files that begin with "unreal-". Use name filters
-        // and also accept any .desktop files in case the naming differs.
-        QStringList filters;
-        filters << "unreal-*.desktop" << "*.desktop";
-        QFileInfoList files = dir.entryInfoList(filters, QDir::Files | QDir::NoSymLinks);
+        const QStringList filters = { "unreal-*.desktop" };
+        const QFileInfoList files = dir.entryInfoList(filters, QDir::Files | QDir::NoSymLinks);
 
-        for (const QFileInfo& fileInfo : files) {
-            QFile file(fileInfo.absoluteFilePath());
-            if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                QTextStream in(&file);
-                QString name;
-                QString path;
-                while (!in.atEnd()) {
-                    QString line = in.readLine();
-                    if (line.startsWith("Name=")) {
-                        name = line.mid(5).trimmed();
-                    } else if (line.startsWith("Exec=")) {
-                        // Exec lines can contain arguments or be surrounded by quotes.
-                        QString exec = line.mid(5).trimmed();
-                        // Remove trailing arguments: split at first space unless path is quoted
-                        if (exec.startsWith('"')) {
-                            // "..." possibly with args after
-                            int endQuote = exec.indexOf('"', 1);
-                            if (endQuote > 0) {
-                                path = exec.mid(1, endQuote - 1);
-                            } else {
-                                path = exec;
-                            }
-                        } else {
-                            int sp = exec.indexOf(' ');
-                            QString candidate = (sp > 0) ? exec.left(sp) : exec;
-                            // If Exec points to the UnrealEditor binary, strip the binary name
-                            const QString suffix = "/Engine/Binaries/Linux/UnrealEditor";
-                            if (candidate.endsWith(suffix)) {
-                                path = candidate.left(candidate.length() - suffix.length());
-                            } else {
-                                path = candidate;
-                            }
-                        }
-                    }
-                }
-                if (!name.isEmpty() && !path.isEmpty()) {
-                    // Ensure the path is a directory and not the binary itself
-                    QDir maybeDir(path);
-                    if (!maybeDir.exists() && QFile::exists(path)) {
-                        // If path itself is a file, take its directory
-                        maybeDir = QDir(QFileInfo(path).absolutePath());
-                    }
-                    if (maybeDir.exists()) {
-                        entries.append({name, maybeDir.absolutePath()});
-                    }
-                }
+        for (const QFileInfo& fi : files) {
+            EditorEntry e = readUnrealDesktop(fi);
+            if (!e.name.isEmpty() && !e.path.isEmpty()) {
+                entries.append(e);
             }
         }
         return entries;

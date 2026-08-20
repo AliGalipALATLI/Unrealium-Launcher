@@ -1,0 +1,24 @@
+{
+  "name": "Set Variable",
+  "keywords": ["set", "variable", "write", "setter", "member", "assignment", "mutation", "update value"],
+  "description": "Generic Blueprint node generated for each member variable. Writes a new value to a member variable on the target object. Like all Blueprint setters, it is an execution pin node so it can be sequenced between other operations.",
+  "inputs": [
+    {
+      "name": "Target",
+      "type": "Object",
+      "description": "The object instance to write to. Hidden when accessed from 'self'. Connect an actor/component reference to write a variable on it."
+    },
+    {
+      "name": "Value",
+      "type": "Wildcard",
+      "description": "The new value to assign to the variable. Type matches the variable's declared type. Connect a literal, math result, or another variable."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Out",
+      "type": "Exec",
+      "description": "Execution pin that fires after the variable is assigned. Continue the graph from here."
+    }
+  ]
+}

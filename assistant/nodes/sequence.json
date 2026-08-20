@@ -1,0 +1,24 @@
+{
+  "name": "Sequence",
+  "keywords": ["sequence", "flow control", "ordered execution", "multiple outputs", "then 0", "then 1"],
+  "description": "Executes a series of output pins in order. Each output fires sequentially from a single execution input, allowing you to run multiple chains one after another without rewiring the graph.",
+  "inputs": [
+    {
+      "name": "In",
+      "type": "Exec",
+      "description": "Execution pin that starts the sequence. Connect any exec output here."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Then 0",
+      "type": "Exec",
+      "description": "First output, fires immediately after In. Connect the first chain of logic here."
+    },
+    {
+      "name": "Then 1",
+      "type": "Exec",
+      "description": "Second output, fires after Then 0 completes. Click 'Add pin' on the Sequence node to create additional Then N outputs."
+    }
+  ]
+}

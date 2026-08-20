@@ -1,0 +1,39 @@
+{
+  "name": "Set Timer by Function Name",
+  "keywords": ["set timer", "timer manager", "schedule", "delay", "loop", "FTimerHandle", "function name", "periodic", "interval"],
+  "description": "Schedules a function (selected by name) to run after a set delay, optionally looping on an interval. Returns a Timer Handle that can be used to pause, clear, or query the timer.",
+  "inputs": [
+    {
+      "name": "Object",
+      "type": "Object",
+      "description": "The object that owns the function to invoke. Usually self, but can be any object exposing the named UFUNCTION."
+    },
+    {
+      "name": "Function Name",
+      "type": "String",
+      "description": "Name of the function to call. Must match a UFUNCTION on the target object exactly (case sensitive)."
+    },
+    {
+      "name": "Time",
+      "type": "Float",
+      "description": "Delay in seconds before the first invocation. Connect a float variable or a literal number."
+    },
+    {
+      "name": "Looping",
+      "type": "Boolean",
+      "description": "Whether the timer should repeat every Time seconds after the first call. True for periodic, false for one-shot."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Out",
+      "type": "Exec",
+      "description": "Execution pin that fires immediately after the timer is registered. Continue the graph from here."
+    },
+    {
+      "name": "Return Value",
+      "type": "Timer Handle",
+      "description": "Handle that identifies the scheduled timer. Save it in a variable and pass it to Clear Timer / Is Timer Active later."
+    }
+  ]
+}

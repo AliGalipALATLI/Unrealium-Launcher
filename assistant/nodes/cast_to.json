@@ -1,0 +1,29 @@
+{
+  "name": "Cast To",
+  "keywords": ["cast", "type check", "downcast", "polymorphic", "Cast<>", "UObject", "safe cast", "cast to", "cast succeeded", "cast failed"],
+  "description": "Attempts to interpret an object reference as a more specific type. If the object is actually that type, the Cast Succeeded pin fires with a typed reference; if not, the Cast Failed pin fires.",
+  "inputs": [
+    {
+      "name": "Object",
+      "type": "Wildcard (Object Reference)",
+      "description": "The object reference to attempt to cast. Connect any object reference (e.g. an Actor reference) that may or may not be the target type."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Cast Succeeded",
+      "type": "Exec",
+      "description": "Fires if the object is the requested type. Continue with the typed reference only after this pin."
+    },
+    {
+      "name": "Cast Failed",
+      "type": "Exec",
+      "description": "Fires if the object is not the requested type. Handle this path to log, fallback, or abort."
+    },
+    {
+      "name": "As [TargetType]",
+      "type": "Target Type",
+      "description": "The object reference typed as the cast target. Valid only on the Cast Succeeded path. The exact type name depends on the chosen cast target."
+    }
+  ]
+}

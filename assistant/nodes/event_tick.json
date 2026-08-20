@@ -1,5 +1,18 @@
 {
   "name": "Event Tick",
-  "keywords": ["tick", "frame", "update", "every frame"],
-  "description": "Called every frame. Use for time-based updates. Be mindful of performance."
+  "keywords": ["tick", "frame", "update", "per frame", "delta time", "every frame"],
+  "description": "Fires every frame while the actor is active. Use for per-frame logic like movement, timers, and animations. Keep it lightweight.",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "Output",
+      "type": "Exec",
+      "description": "Execution pin. Runs once per frame. Connect to any node that should update every frame (e.g. Move Actor, Update Timer)."
+    },
+    {
+      "name": "Delta Seconds",
+      "type": "Float",
+      "description": "Time in seconds since the last tick. Connect to math or movement nodes to make behavior framerate-independent."
+    }
+  ]
 }

@@ -1,0 +1,19 @@
+{
+  "name": "Delay",
+  "keywords": ["delay", "wait", "timer", "latent", "seconds", "time", "pause"],
+  "description": "Performs a latent action with a delay specified in seconds. Calling the node again while it is counting down will be ignored. Target is Kismet System Library.",
+  "inputs": [
+    {
+      "name": "Duration",
+      "type": "Float",
+      "description": "Length of the delay in seconds. Connect a literal number, a float variable, or the output of a math node."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Completed",
+      "type": "Exec",
+      "description": "Execution pin that fires after the duration has elapsed. Connect to any node that should run after the wait."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Flip Flop",
+  "keywords": ["flip flop", "toggle", "alternating", "A/B", "bool state", "persistent", "is A"],
+  "description": "Alternates execution between its A and B outputs each time it is called. The first call goes out A, the next out B, and so on. Also exposes an Is A boolean reporting which path was just taken.",
+  "inputs": [
+    {
+      "name": "In",
+      "type": "Exec",
+      "description": "Execution pin that triggers the flip-flop. Connect any exec output to advance the internal A/B state."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "A",
+      "type": "Exec",
+      "description": "Fires on odd-numbered invocations (first, third, fifth...). Connect the first branch of logic here."
+    },
+    {
+      "name": "B",
+      "type": "Exec",
+      "description": "Fires on even-numbered invocations (second, fourth, sixth...). Connect the alternate branch of logic here."
+    },
+    {
+      "name": "Is A",
+      "type": "Boolean",
+      "description": "True when the A output just fired (i.e. this was an A call). Useful for branching further off the chosen path."
+    }
+  ]
+}

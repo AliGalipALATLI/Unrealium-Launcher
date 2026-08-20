@@ -1,0 +1,24 @@
+{
+  "name": "Add",
+  "keywords": ["add", "sum", "plus", "+", "arithmetic", "float", "math operator", "n-ary", "addition"],
+  "description": "Adds two floating-point numbers. The Blueprint Add node is variadic: drag additional input pins to sum more than two values. Returns the sum of all connected inputs.",
+  "inputs": [
+    {
+      "name": "A",
+      "type": "Float",
+      "description": "First addend. Connect a float variable, a literal number, or the output of any node returning a float."
+    },
+    {
+      "name": "B",
+      "type": "Float",
+      "description": "Second addend. Connect a float variable, a literal number, or the output of any node returning a float."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Return Value",
+      "type": "Float",
+      "description": "The sum A + B (+ any additional C, D, ... pins added by dragging the node)."
+    }
+  ]
+}

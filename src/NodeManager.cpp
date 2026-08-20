@@ -51,6 +51,22 @@ std::optional<NodeEntry> NodeManager::loadNodeById(const QString& filePath) {
             e.keywords.push_back(v.toString());
         }
     }
+    auto parsePins = [&](const QString& key, QVector<NodePin>& target) {
+        QJsonValue v = obj.value(key);
+        if (!v.isArray()) return;
+        QJsonArray arr = v.toArray();
+        for (const QJsonValue& item : arr) {
+            if (!item.isObject()) continue;
+            QJsonObject po = item.toObject();
+            NodePin p;
+            p.name = po.value("name").toString();
+            p.type = po.value("type").toString();
+            p.description = po.value("description").toString();
+            target.push_back(p);
+        }
+    };
+    parsePins("inputs", e.inputs);
+    parsePins("outputs", e.outputs);
     return e;
 }
 

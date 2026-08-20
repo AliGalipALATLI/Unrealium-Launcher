@@ -1,0 +1,44 @@
+{
+  "name": "Print String",
+  "keywords": ["print", "log", "debug", "screen", "text", "on-screen message", "kismet", "system library"],
+  "description": "Prints a string to the log and optionally to the screen. If 'Print to Log' is true, it will be visible in the Output Log window. Otherwise it will be logged only as 'Verbose'. Target is Kismet System Library.",
+  "inputs": [
+    {
+      "name": "In String",
+      "type": "String",
+      "description": "The string to log out. Connect a literal string, an Append String result, or the output of any node returning a string."
+    },
+    {
+      "name": "Print to Screen",
+      "type": "Boolean",
+      "description": "Whether or not to print the output to the screen (on-screen debug message)."
+    },
+    {
+      "name": "Print to Log",
+      "type": "Boolean",
+      "description": "Whether or not to print the output to the Output Log. When false, the message is logged only as 'Verbose' and generally won't show up."
+    },
+    {
+      "name": "Text Color",
+      "type": "LinearColor",
+      "description": "The color of the text to display on screen. Connect a Make Linear Color or a color variable."
+    },
+    {
+      "name": "Duration",
+      "type": "Float",
+      "description": "How long, in seconds, the on-screen message remains visible (if Print to Screen is true). A negative number loads the duration from the config."
+    },
+    {
+      "name": "Key",
+      "type": "Name",
+      "description": "If a non-empty key is provided, the message will replace any existing on-screen messages with the same key. Leave empty to always add a new line."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Out",
+      "type": "Exec",
+      "description": "Execution pin that fires immediately after the string is dispatched. Use it to continue the graph."
+    }
+  ]
+}

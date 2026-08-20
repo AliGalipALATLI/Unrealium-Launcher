@@ -1,129 +1,167 @@
 #include "MainWindow.h"
-#include "AddEditorDialog.h"
-#include "NodeDetailDialog.h"
-#include <QVBoxLayout>
-#include <QCoreApplication>
+#include "NewsPage.h"
+#include "NodesPage.h"
+#include "AddEditorPage.h"
+#include "SettingsDialog.h"
+#include "SettingsManager.h"
+#include "StyleManager.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-  setWindowTitle("Unreal Launcher");
-  setMinimumSize(800, 600);
-  resize(800, 600);
+#include <QHBoxLayout>
+#include <QWidget>
+#include <QFrame>
+#include <QPushButton>
 
-  stackedWidget = new QStackedWidget(this);
-  setCentralWidget(stackedWidget);
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
+    setWindowTitle("Unrealium Launcher");
+    setMinimumSize(1000, 640);
+    resize(1100, 680);
 
-  // Page 0: Main Page with search sidebar
-  mainPage = new QWidget();
-  QHBoxLayout *pageLayout = new QHBoxLayout(mainPage);
-  pageLayout->setContentsMargins(16,16,16,16);
+    m_settings = SettingsManager::load();
 
-  // Left: search sidebar (fixed)
-  QWidget *left = new QWidget(mainPage);
-  left->setFixedWidth(340);
-  QVBoxLayout *leftLayout = new QVBoxLayout(left);
-  leftLayout->setContentsMargins(8,8,8,8);
+    auto* central = new QWidget(this);
+    auto* root    = new QHBoxLayout(central);
+    root->setContentsMargins(0, 0, 0, 0);
+    root->setSpacing(0);
 
-  QLineEdit *searchEdit = new QLineEdit(left);
-  searchEdit->setPlaceholderText("Search nodes...");
-  leftLayout->addWidget(searchEdit);
+    m_sidebar = new Sidebar(central);
+    root->addWidget(m_sidebar);
 
-  QListView *resultsView = new QListView(left);
-  QStandardItemModel *resultsModel = new QStandardItemModel(this);
-  resultsView->setModel(resultsModel);
-  leftLayout->addWidget(resultsView);
+    m_contentWrap = new QWidget(central);
+    m_contentWrap->setObjectName("contentWrap");
+    auto* contentLay = new QVBoxLayout(m_contentWrap);
+    contentLay->setContentsMargins(0, 0, 0, 0);
+    contentLay->setSpacing(0);
 
-  pageLayout->addWidget(left);
+    auto* topBar = new QWidget(m_contentWrap);
+    topBar->setObjectName("contentTopBar");
+    topBar->setFixedHeight(44);
+    auto* topBarLay = new QHBoxLayout(topBar);
+    topBarLay->setContentsMargins(14, 8, 14, 8);
+    topBarLay->setSpacing(0);
 
-  // Right: main content (buttons centered)
-  QWidget *right = new QWidget(mainPage);
-  QVBoxLayout *rightLayout = new QVBoxLayout(right);
-  rightLayout->addStretch();
+    m_settingsBtn = new QPushButton(QStringLiteral("\u2699"), topBar);
+    m_settingsBtn->setObjectName("settingsBtn");
+    m_settingsBtn->setCursor(Qt::PointingHandCursor);
+    m_settingsBtn->setToolTip(tr("Settings"));
+    topBarLay->addWidget(m_settingsBtn);
+    topBarLay->addStretch(1);
+    contentLay->addWidget(topBar);
 
-  viewEditorsButton = new QPushButton("View Editors", this);
-  connect(viewEditorsButton, &QPushButton::clicked, this,
-          &MainWindow::showViewEditorsPage);
+    m_content = new QStackedWidget(m_contentWrap);
+    m_content->setObjectName("contentStack");
 
-  viewProjectsButton = new QPushButton("View Projects", this);
-  connect(viewProjectsButton, &QPushButton::clicked, this,
-          &MainWindow::showViewProjectsPage);
+    m_opacityEffect = new QGraphicsOpacityEffect(m_content);
+    m_opacityEffect->setOpacity(1.0);
+    m_content->setGraphicsEffect(m_opacityEffect);
 
-  addEditorButton = new QPushButton("Add Editor", this);
-  connect(addEditorButton, &QPushButton::clicked, this,
-          &MainWindow::openAddEditorDialog);
+    m_fadeAnim = new QPropertyAnimation(m_opacityEffect, "opacity", this);
+    m_fadeAnim->setDuration(180);
 
-  QSize btnSize(240, 56);
-  viewEditorsButton->setFixedSize(btnSize);
-  viewProjectsButton->setFixedSize(btnSize);
-  addEditorButton->setFixedSize(btnSize);
+    contentLay->addWidget(m_content, 1);
+    root->addWidget(m_contentWrap, 1);
 
-  rightLayout->addWidget(viewEditorsButton, 0, Qt::AlignCenter);
-  rightLayout->addSpacing(12);
-  rightLayout->addWidget(viewProjectsButton, 0, Qt::AlignCenter);
-  rightLayout->addSpacing(12);
-  rightLayout->addWidget(addEditorButton, 0, Qt::AlignCenter);
-  rightLayout->addStretch();
+    setCentralWidget(central);
 
-  pageLayout->addWidget(right);
+    buildContent();
+    applyScales();
 
-  stackedWidget->addWidget(mainPage);
+    connect(m_sidebar, &Sidebar::addEditorRequested, this, [this]{
+        switchToPage(Sidebar::AddEditor);
+    });
+    connect(m_sidebar, &Sidebar::pageRequested, this, &MainWindow::switchToPage);
 
-  // Load nodes from repo assistant/nodes (checking multiple locations)
-  QString nodesDir = NodeManager::getNodesPath();
-  QVector<NodeEntry> nodes = NodeManager::loadNodes(nodesDir);
+    connect(m_addEditorPage, &AddEditorPage::editorAdded, this, [this]{
+        m_editorsPage->loadEditors();
+        m_addEditorPage->rescanDiscovered();
+    });
 
-  // Wire search
-  connect(searchEdit, &QLineEdit::textChanged, this, [=](const QString &text){
-      QVector<NodeEntry> res = NodeManager::filterNodes(nodes, text, 50);
-      resultsModel->clear();
-      for (const auto &n : res) {
-          QStandardItem *it = new QStandardItem(n.name);
-          it->setData(n.id, Qt::UserRole);
-          it->setToolTip(n.description);
-          resultsModel->appendRow(it);
-      }
-  });
+    connect(m_addEditorPage, &AddEditorPage::closed, this, [this]{
+        switchToPage(Sidebar::Editors);
+    });
 
-  // Click opens detail dialog
-  connect(resultsView, &QListView::clicked, this, [=](const QModelIndex &idx){
-      if (!idx.isValid()) return;
-      QString id = idx.data(Qt::UserRole).toString();
-      for (const auto &n : nodes) {
-          if (n.id == id) {
-              // lazy-include to avoid header ordering problems
-              NodeDetailDialog *dlg = new NodeDetailDialog(n, this);
-              dlg->exec();
-              delete dlg;
-              break;
-          }
-      }
-  });
+    connect(m_settingsBtn, &QPushButton::clicked, this, &MainWindow::openSettings);
 
-  // Page 1: View Editors Page
-  viewEditorsPage = new ViewEditorsPage(this);
-  connect(viewEditorsPage, &ViewEditorsPage::backRequested, this,
-          &MainWindow::showMainPage);
-  stackedWidget->addWidget(viewEditorsPage);
-
-  // Page 2: View Projects Page
-  viewProjectsPage = new ViewProjectsPage(this);
-  connect(viewProjectsPage, &ViewProjectsPage::backRequested, this,
-          &MainWindow::showMainPage);
-  stackedWidget->addWidget(viewProjectsPage);
+    m_sidebar->setActivePage(Sidebar::News);
+    m_content->setCurrentWidget(m_newsPage);
 }
 
-void MainWindow::openAddEditorDialog() {
-  AddEditorDialog dialog(this);
-  dialog.exec();
+void MainWindow::buildContent() {
+    m_newsPage      = new NewsPage(m_content);
+    m_editorsPage   = new ViewEditorsPage(m_content);
+    m_projectsPage  = new ViewProjectsPage(m_content);
+    m_nodesPage     = new NodesPage(m_content);
+    m_addEditorPage = new AddEditorPage(m_content);
+
+    m_content->addWidget(m_newsPage);       // 0
+    m_content->addWidget(m_editorsPage);    // 1
+    m_content->addWidget(m_projectsPage);   // 2
+    m_content->addWidget(m_nodesPage);      // 3
+    m_content->addWidget(m_addEditorPage);  // 4
 }
 
-void MainWindow::showViewEditorsPage() {
-  viewEditorsPage->loadEditors();
-  stackedWidget->setCurrentIndex(1);
+void MainWindow::applyScales() {
+    m_sidebar->setUiScale(m_settings.uiScale);
+
+    const double scale = m_settings.uiScale / 100.0;
+    const int barH  = qRound(44.0 * scale);
+    const int btnSz = qRound(28.0 * scale);
+    const int m     = qRound(14.0 * scale);
+
+    auto* topBar = m_settingsBtn->parentWidget();
+    topBar->setFixedHeight(barH);
+
+    auto* lay = qobject_cast<QHBoxLayout*>(topBar->layout());
+    if (lay) lay->setContentsMargins(m, qRound(8.0 * scale), m, qRound(8.0 * scale));
+
+    m_settingsBtn->setFixedSize(btnSz, btnSz);
 }
 
-void MainWindow::showViewProjectsPage() {
-  viewProjectsPage->loadProjects();
-  stackedWidget->setCurrentIndex(2);
+void MainWindow::openSettings() {
+    SettingsDialog dlg(m_settings, this);
+    connect(&dlg, &SettingsDialog::settingsApplied, this, [this](const AppSettings& s){
+        m_settings = s;
+        SettingsManager::save(m_settings);
+        StyleManager::apply(m_settings.fontScale, m_settings.uiScale);
+        applyScales();
+    });
+    dlg.exec();
 }
 
-void MainWindow::showMainPage() { stackedWidget->setCurrentIndex(0); }
+void MainWindow::onEditorAdded() {
+    m_editorsPage->loadEditors();
+}
+
+void MainWindow::switchToPage(Sidebar::Page page) {
+    QWidget* target = nullptr;
+    switch (page) {
+        case Sidebar::News:      target = m_newsPage;      break;
+        case Sidebar::Editors:   target = m_editorsPage;   m_editorsPage->loadEditors();   break;
+        case Sidebar::Projects:  target = m_projectsPage;  m_projectsPage->loadProjects(); break;
+        case Sidebar::Nodes:     target = m_nodesPage;     break;
+        case Sidebar::AddEditor: target = m_addEditorPage; m_addEditorPage->rescanDiscovered(); break;
+    }
+    if (!target) return;
+    if (m_content->currentWidget() == target) return;
+
+    m_sidebar->setActivePage(page);
+    fadeTo(target);
+}
+
+void MainWindow::fadeTo(QWidget* target) {
+    m_fadeAnim->stop();
+    disconnect(m_fadeAnim, nullptr, this, nullptr);
+
+    connect(m_fadeAnim, &QPropertyAnimation::finished, this, [this, target](){
+        if (qFuzzyCompare(m_opacityEffect->opacity(), 1.0)) return;
+
+        m_content->setCurrentWidget(target);
+
+        m_fadeAnim->setStartValue(0.0);
+        m_fadeAnim->setEndValue(1.0);
+        m_fadeAnim->start();
+    });
+
+    m_fadeAnim->setStartValue(1.0);
+    m_fadeAnim->setEndValue(0.0);
+    m_fadeAnim->start();
+}

@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/assets">
+        <file alias="UE.png">assets/UE.png</file>
+        <file alias="AR.png">assets/AR.png</file>
+        <file alias="TRA.png">assets/TRA.png</file>
+        <file alias="empty.png">assets/empty.png</file>
+        <file alias="full.png">assets/full.png</file>
+    </qresource>
+</RCC>

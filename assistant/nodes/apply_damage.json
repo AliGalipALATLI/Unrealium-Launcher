@@ -1,0 +1,39 @@
+{
+  "name": "Apply Damage",
+  "keywords": ["apply damage", "damage", "take damage", "health", "instigator", "damage causer", "UGameplayStatics", "UDamageType", "harm"],
+  "description": "Deals a fixed amount of damage to a single target actor and routes it through Unreal's damage pipeline. The damaged actor receives the value through its TakeDamage / OnTakeAnyDamage path.",
+  "inputs": [
+    {
+      "name": "Damaged Actor",
+      "type": "Actor",
+      "description": "The actor receiving the damage. Must implement or inherit TakeDamage to actually be affected."
+    },
+    {
+      "name": "Base Damage",
+      "type": "Float",
+      "description": "The amount of damage to apply. Connect a literal number, a weapon stat variable, or the output of a math node."
+    },
+    {
+      "name": "Event Instigator",
+      "type": "Controller",
+      "description": "The controller responsible for the damage (used for kill credit, scoring, and friendly-fire checks)."
+    },
+    {
+      "name": "Damage Causer",
+      "type": "Actor",
+      "description": "The actor that physically caused the damage (e.g. a projectile, an explosion source)."
+    },
+    {
+      "name": "Damage Type Class",
+      "type": "Damage Type Class",
+      "description": "The damage type class that determines how damage is processed (default UDamageType, or a custom subclass)."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Out",
+      "type": "Exec",
+      "description": "Execution pin that fires after the damage has been dispatched. Continue the graph from here."
+    }
+  ]
+}

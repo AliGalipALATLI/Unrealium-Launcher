@@ -1,0 +1,39 @@
+{
+  "name": "Get Random Point in Navigable Radius",
+  "keywords": ["random point", "navigable radius", "navmesh", "AI", "wandering", "patrol", "UNavigationSystemV1", "GetRandomLocationInNavigableRadius", "navigation"],
+  "description": "Finds a random point in navigable space restricted to a radius around an origin. Useful for AI wandering, patrol, and spawn placement on the navmesh. Target is Navigation System V1.",
+  "inputs": [
+    {
+      "name": "Origin",
+      "type": "Vector",
+      "description": "Center of the search area in world space. Connect a Get Actor Location, a Vector variable, or any world-space Vector."
+    },
+    {
+      "name": "Radius",
+      "type": "Float",
+      "description": "Search radius around the origin in Unreal units (cm). Larger radii may return no result if no navmesh exists in that range."
+    },
+    {
+      "name": "Nav Data",
+      "type": "Navigation Data",
+      "description": "Specific navigation data to query. Leave null (default) to use the active navigation system."
+    },
+    {
+      "name": "Filter Class",
+      "type": "Navigation Query Filter Class",
+      "description": "Optional filter class to constrain which nav areas are valid (for example to exclude water or lava)."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Random Location",
+      "type": "Vector",
+      "description": "The sampled world-space location on the navmesh. Connect to Set Actor Location, AI MoveTo, or any node accepting a Vector."
+    },
+    {
+      "name": "Return Value",
+      "type": "Boolean",
+      "description": "True if a valid point was found within the radius. Always check this before using the Random Location."
+    }
+  ]
+}

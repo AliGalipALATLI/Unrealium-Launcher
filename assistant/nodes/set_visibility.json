@@ -1,0 +1,29 @@
+{
+  "name": "Set Visibility",
+  "keywords": ["set visibility", "show", "hide", "component visibility", "USceneComponent", "propagate to children", "visible", "hidden"],
+  "description": "Shows or hides a scene component and, optionally, propagates that change to its child components. Useful for toggling meshes, lights, particles, or entire hierarchies on/off at runtime.",
+  "inputs": [
+    {
+      "name": "Target",
+      "type": "Scene Component",
+      "description": "The component whose visibility should be set. Connect a Get reference to a mesh, light, particle, or other scene component."
+    },
+    {
+      "name": "New Visibility",
+      "type": "Boolean",
+      "description": "True to show the component, false to hide it. Hide does not disable collision or tick - use Set Actor Hidden In Game for actor-wide hiding."
+    },
+    {
+      "name": "Propagate to Children",
+      "type": "Boolean",
+      "description": "If true, the change is also applied to all child components attached beneath this one in the hierarchy."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Out",
+      "type": "Exec",
+      "description": "Execution pin that fires after the visibility change is applied. Continue the graph from here."
+    }
+  ]
+}

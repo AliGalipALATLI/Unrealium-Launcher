@@ -1,0 +1,39 @@
+{
+  "name": "Set Actor Location",
+  "keywords": ["set actor location", "teleport", "move actor", "world position", "sweep", "AActor", "root component", "transform"],
+  "description": "Moves an actor's root component to an absolute world-space position. Optionally sweeps against blocking geometry instead of teleporting. Returns true if the location was successfully set.",
+  "inputs": [
+    {
+      "name": "Target",
+      "type": "Actor",
+      "description": "The actor whose root component should be moved. Connect a Get reference, a Spawn Actor output, or a self-reference."
+    },
+    {
+      "name": "New Location",
+      "type": "Vector",
+      "description": "The new world-space location for the actor's root component. Connect a Make Vector node or a Vector variable."
+    },
+    {
+      "name": "Sweep",
+      "type": "Boolean",
+      "description": "Whether to sweep the actor to the destination, testing for blocking collision along the way. Disable for clean teleports."
+    },
+    {
+      "name": "Teleport",
+      "type": "TeleportPhysicState",
+      "description": "How to handle physics state for the teleport: None (preserve velocity) or TeleportPhysics (reset physics state)."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Out",
+      "type": "Exec",
+      "description": "Execution pin that fires after the location is applied. Continue the graph from here."
+    },
+    {
+      "name": "Return Value",
+      "type": "Boolean",
+      "description": "True if the location was successfully set. False when sweeping is enabled and the move was blocked by collision."
+    }
+  ]
+}

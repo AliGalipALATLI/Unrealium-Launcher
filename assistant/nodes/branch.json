@@ -1,5 +1,24 @@
 {
   "name": "Branch",
-  "keywords": ["branch", "condition", "if", "flow"],
-  "description": "Branches execution depending on a boolean condition. Use to split logic paths."
+  "keywords": ["branch", "condition", "if", "else", "flow", "boolean", "decision"],
+  "description": "Routes execution to True or False based on a boolean condition. Acts like an if/else statement.",
+  "inputs": [
+    {
+      "name": "Condition",
+      "type": "Boolean",
+      "description": "Boolean value to test. Connect the output of comparison nodes (==, >, <), boolean variables, or boolean-returning functions."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "True",
+      "type": "Exec",
+      "description": "Execution pin fired when Condition is true. Connect to nodes that should run in the true case."
+    },
+    {
+      "name": "False",
+      "type": "Exec",
+      "description": "Execution pin fired when Condition is false. Connect to nodes that should run in the false case."
+    }
+  ]
 }

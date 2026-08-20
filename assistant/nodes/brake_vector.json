@@ -1,5 +1,29 @@
 {
   "name": "Break Vector",
-  "keywords": ["break vector", "decompose", "x", "y", "z"],
-  "description": "Decomposes a vector into its X, Y and Z components. Useful to extract coordinates."
+  "keywords": ["break vector", "decompose", "vector", "x", "y", "z", "split"],
+  "description": "Splits a Vector into its three float components (X, Y, Z). Used to read or modify a single axis of a vector value.",
+  "inputs": [
+    {
+      "name": "V",
+      "type": "Vector",
+      "description": "Vector to decompose. Connect the output of any node that returns a Vector (e.g. Get Actor Location, Get Velocity, Make Vector)."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "X",
+      "type": "Float",
+      "description": "Horizontal component. Connect to math nodes, float variables, or comparison nodes."
+    },
+    {
+      "name": "Y",
+      "type": "Float",
+      "description": "Depth component. Connect to math nodes, float variables, or comparison nodes."
+    },
+    {
+      "name": "Z",
+      "type": "Float",
+      "description": "Vertical component. Connect to math nodes, float variables, or comparison nodes."
+    }
+  ]
 }

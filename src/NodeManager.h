@@ -4,11 +4,19 @@
 #include <QJsonObject>
 #include <optional>
 
+struct NodePin {
+    QString name;
+    QString type;   // e.g. "Vector", "Float", "Bool", "Exec"
+    QString description;
+};
+
 struct NodeEntry {
     QString id; // filename without extension
     QString name;
     QVector<QString> keywords;
     QString description;
+    QVector<NodePin> inputs;
+    QVector<NodePin> outputs;
 };
 
 class NodeManager {

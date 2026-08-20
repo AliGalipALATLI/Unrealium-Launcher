@@ -1,34 +1,48 @@
 #pragma once
+#include "Sidebar.h"
+#include "SettingsManager.h"
+
+#include <QMainWindow>
+#include <QStackedWidget>
+#include <QGraphicsOpacityEffect>
+#include <QPropertyAnimation>
+
 #include "ViewEditorsPage.h"
 #include "ViewProjectsPage.h"
-#include <QMainWindow>
-#include <QPushButton>
-#include <QStackedWidget>
-#include <QLineEdit>
-#include <QListView>
-#include <QStandardItemModel>
 
-#include "NodeManager.h"
-
+class NewsPage;
+class NodesPage;
+class AddEditorPage;
+class SettingsDialog;
 
 class MainWindow : public QMainWindow {
-  Q_OBJECT
-
+    Q_OBJECT
 public:
-  MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget* parent = nullptr);
 
 private slots:
-  void openAddEditorDialog();
-  void showViewEditorsPage();
-  void showViewProjectsPage();
-  void showMainPage();
+    void switchToPage(Sidebar::Page page);
+    void onEditorAdded();
+    void openSettings();
 
 private:
-  QStackedWidget *stackedWidget;
-  QWidget *mainPage;
-  QPushButton *addEditorButton;
-  QPushButton *viewEditorsButton;
-  QPushButton *viewProjectsButton;
-  ViewEditorsPage *viewEditorsPage;
-  ViewProjectsPage *viewProjectsPage;
+    void buildContent();
+    void applyScales();
+    void fadeTo(QWidget* target);
+
+    Sidebar*        m_sidebar     = nullptr;
+    QWidget*        m_contentWrap = nullptr;
+    QStackedWidget* m_content     = nullptr;
+
+    NewsPage*        m_newsPage      = nullptr;
+    ViewEditorsPage* m_editorsPage   = nullptr;
+    ViewProjectsPage* m_projectsPage = nullptr;
+    NodesPage*       m_nodesPage     = nullptr;
+    AddEditorPage*   m_addEditorPage = nullptr;
+
+    QGraphicsOpacityEffect* m_opacityEffect = nullptr;
+    QPropertyAnimation*     m_fadeAnim      = nullptr;
+
+    QPushButton*    m_settingsBtn  = nullptr;
+    AppSettings     m_settings;
 };

@@ -1,65 +1,36 @@
 #include "ViewEditorsPage.h"
 #include "EditorCardWidget.h"
 #include "ConfigManager.h"
+#include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QPushButton>
 #include <QScrollArea>
 #include <QCoreApplication>
-#include <QPixmap>
-#include <QIcon>
-#include <algorithm>
 #include <QSplitter>
-#include "NodeManager.h"
 
 ViewEditorsPage::ViewEditorsPage(QWidget* parent) : QWidget(parent) {
-    QHBoxLayout* outer = new QHBoxLayout(this);
-    outer->setContentsMargins(0,0,0,0);
+    auto* outer = new QVBoxLayout(this);
+    outer->setContentsMargins(28, 24, 28, 24);
+    outer->setSpacing(0);
 
-    // Sidebar is now handled by MainWindow/mainPage. This view only shows grid of editors.
+    auto* header = new QLabel("Editors", this);
+    header->setObjectName("pageTitle");
+    outer->addWidget(header);
 
-    QVBoxLayout* mainLayout = new QVBoxLayout();
-    mainLayout->setContentsMargins(0, 0, 0, 0);
+    auto* sub = new QLabel("Registered Unreal Engine installations on this system.", this);
+    sub->setObjectName("pageSubtitle");
+    outer->addWidget(sub);
 
-    // Back Button
-    QPushButton* backButton = new QPushButton(this);
-    // Try to load icon using robust data path helper
-    QPixmap pixmap;
-    bool iconLoaded = false;
-    QString iconPath = NodeManager::getDataPath("assets/AR.png");
-    if (pixmap.load(iconPath)) {
-        backButton->setIcon(QIcon(pixmap));
-        iconLoaded = true;
-    }
+    outer->addSpacing(18);
 
-    backButton->setFixedSize(44, 44);
-    // Make icon / text clearly visible
-    if (iconLoaded) {
-        backButton->setIconSize(QSize(28, 28));
-        backButton->setStyleSheet("border: none; background: transparent; color: #ffffff; padding-left: 6px;");
-    } else {
-        // Fallback to a visible arrow text if icon not found
-        backButton->setText("\u2190");
-        backButton->setStyleSheet("color: #ffffff; font-size: 22px; font-weight: bold; border: none; background: transparent; padding-left: 6px;");
-    }
-    connect(backButton, &QPushButton::clicked, this, &ViewEditorsPage::backRequested);
-
-    QHBoxLayout* topLayout = new QHBoxLayout();
-    topLayout->addWidget(backButton);
-    topLayout->addStretch();
-    topLayout->setContentsMargins(8, 8, 8, 8);
-    mainLayout->addLayout(topLayout);
-
-    // Scroll Area (main content)
-    QScrollArea* scrollArea = new QScrollArea();
+    auto* scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollArea->setFrameShape(QFrame::NoFrame);
 
-    QWidget* scrollWidget = new QWidget();
+    auto* scrollWidget = new QWidget();
     m_gridLayout = new QGridLayout(scrollWidget);
-    m_gridLayout->setContentsMargins(16, 16, 16, 16);
+    m_gridLayout->setContentsMargins(0, 0, 0, 0);
     m_gridLayout->setSpacing(16);
-    
-    // Set 5 columns stretch
+
     for (int i = 0; i < 5; ++i) {
         m_gridLayout->setColumnStretch(i, 1);
     }
@@ -67,12 +38,7 @@ ViewEditorsPage::ViewEditorsPage(QWidget* parent) : QWidget(parent) {
     scrollWidget->setLayout(m_gridLayout);
     scrollArea->setWidget(scrollWidget);
 
-    // Keep main background black; scroll area will show cards on dark grey boxes
-    mainLayout->addWidget(scrollArea);
-
-    outer->addLayout(mainLayout);
-
-    // Nodes directory relative to application dir / repo (kept for future use)
+    outer->addWidget(scrollArea, 1);
 }
 
 void ViewEditorsPage::clearLayout(QLayout* layout) {
@@ -89,22 +55,17 @@ void ViewEditorsPage::loadEditors() {
     clearLayout(m_gridLayout);
 
     QList<EditorEntry> entries = ConfigManager::loadEntries();
-    
-    // Entries are displayed in the order stored in the config file.
-    // Favorites are moved to the front when they are toggled, so we
-    // rely on the persisted ordering instead of re-sorting here.
 
     int row = 0;
     int col = 0;
 
     for (const auto& entry : entries) {
-        // Ensure card widgets are parented to the scroll area's widget (the grid's parent)
         QWidget* gridParent = m_gridLayout->parentWidget();
         EditorCardWidget* card = new EditorCardWidget(entry, gridParent);
         connect(card, &EditorCardWidget::deletionRequested, this, &ViewEditorsPage::loadEditors);
         connect(card, &EditorCardWidget::favoriteChanged, this, &ViewEditorsPage::loadEditors);
         connect(card, &EditorCardWidget::nameChanged, this, &ViewEditorsPage::loadEditors);
-        
+
         m_gridLayout->addWidget(card, row, col);
         col++;
         if (col >= 5) {
@@ -112,13 +73,7 @@ void ViewEditorsPage::loadEditors() {
             row++;
         }
     }
-    
-    // We add a stretchable spacer at the end to push cards to the top
+
     QSpacerItem* spacer = new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
     m_gridLayout->addItem(spacer, row + 1, 0, 1, 5);
 }
-
-// Simple fuzzy score wrapper (placeholder)
-// legacy placeholder removed
-
-// search functionality moved into NodeManager::filterNodes
